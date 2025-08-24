@@ -1,0 +1,60 @@
+{
+    "windows_kernel": [
+        "ntoskrnl.exe",
+        "hal.dll"
+    ],
+    "system_dlls": [
+        "kernel32.dll",
+        "user32.dll",
+        "gdi32.dll"
+    ],
+    "system_processes": [
+        "winlogon.exe",
+        "csrss.exe",
+        "smss.exe",
+        "lsass.exe",
+        "svchost.exe",
+        "dwm.exe"
+    ],
+    "management_tools": [
+        "compmgmt.msc",
+        "diskmgmt.msc",
+        "devmgmt.msc",
+        "services.msc",
+        "eventvwr.msc",
+        "secpol.msc",
+        "gpedit.msc",
+        "taskschd.msc",
+        "certmgr.msc",
+        "perfmon.msc",
+        "fsmgmt.msc",
+        "wmimgmt.msc",
+        "lusrmgr.msc",
+        "printmanagement.msc"
+    ],
+    "system_utilities": [
+        "regedit.exe",
+        "msconfig.exe",
+        "dxdiag.exe",
+        "taskmgr.exe",
+        "sysdm.cpl",
+        "appwiz.cpl",
+        "inetcpl.cpl",
+        "ncpa.cpl",
+        "firewall.cpl",
+        "timedate.cpl",
+        "mmsys.cpl",
+        "main.cpl",
+        "powercfg.cpl",
+        "desk.cpl",
+        "cleanmgr.exe",
+        "resmon.exe",
+        "winver.exe",
+        "control.exe",
+        "optionalfeatures.exe",
+        "snippingtool.exe",
+        "magnify.exe",
+        "osk.exe",
+        "narrator.exe"
+    ]
+}
