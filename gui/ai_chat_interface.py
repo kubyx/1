@@ -19,42 +19,12 @@ class AIChatInterface(ctk.CTkFrame):
         main_frame = ctk.CTkFrame(self)
         main_frame.pack(fill="both", expand=True, padx=10, pady=10)
         
-        # Model seçimi
-        model_frame = ctk.CTkFrame(main_frame)
-        model_frame.pack(fill="x", pady=(0, 10))
+        # Butonlar
+        button_frame = ctk.CTkFrame(main_frame)
+        button_frame.pack(fill="x", pady=(0, 10))
         
-        ctk.CTkLabel(model_frame, text="AI Modeli:").pack(side="left", padx=5)
-        
-        # Gerçek model listesi
-        self.model_var = tk.StringVar(value="Ollama - wizardcoder:7b-python")
-        model_options = [
-            "Ollama - wizardcoder:7b-python",
-            "Ollama - wizardcoder:latest", 
-            "Ollama - phi:latest",
-            "Local - Llama-3.2-1B",
-            "Local - phi-2",
-            "Local - mistral-7b",
-            "Local - llama-3-8b",
-            "Local - gemma-2-2b"
-        ]
-        
-        model_combo = ctk.CTkComboBox(model_frame, 
-                                    values=model_options,
-                                    variable=self.model_var,
-                                    width=250)
-        model_combo.pack(side="left", padx=5)
-        
-        # Model yükleme butonu
-        ctk.CTkButton(model_frame, text="🔄 Modeli Yükle", 
-                     command=self.load_model, width=120).pack(side="left", padx=5)
-        
-        # Bağlantı durumu
-        self.status_label = ctk.CTkLabel(model_frame, text="🔴 Bağlantı Yok", 
-                                       text_color="red")
-        self.status_label.pack(side="right", padx=5)
-        
-        ctk.CTkButton(model_frame, text="🎤 Sesli Giriş", command=self.toggle_voice, width=100).pack(side="right", padx=5)
-        ctk.CTkButton(model_frame, text="🔍 Sistem Analiz", command=self.analyze_system, width=100).pack(side="right", padx=5)
+        ctk.CTkButton(button_frame, text="🎤 Sesli Giriş", command=self.toggle_voice, width=100).pack(side="right", padx=5)
+        ctk.CTkButton(button_frame, text="🔍 Sistem Analiz", command=self.analyze_system, width=100).pack(side="right", padx=5)
         
         # Sohbet alanı
         chat_frame = ctk.CTkFrame(main_frame)
@@ -86,17 +56,17 @@ class AIChatInterface(ctk.CTkFrame):
         try:
             from core.ai_integration import AIIntegration
             self.ai_integration = AIIntegration()
-            models = self.ai_integration.load_models()
             
-            if self.ai_integration.is_connected:
-                self.status_label.configure(text="🟢 Ollama Bağlı", text_color="green")
+            # Ana pencereden backend bilgisini al
+            backend = self.parent.backend_var.get()
+            is_connected = self.ai_integration.check_backend_connection(backend)
+            
+            if is_connected:
+                self.add_message("System", f"{backend} bağlantısı başarılı.")
             else:
-                self.status_label.configure(text="🟡 Yerel Modeller", text_color="orange")
+                self.add_message("System", f"{backend} bağlantısı yok. Varsayılan modeller kullanılacak.")
                 
-            self.add_message("System", f"AI sistemi hazır. {len(models)} model tespit edildi.")
-            
         except Exception as e:
-            self.status_label.configure(text="🔴 AI Hatası", text_color="red")
             self.add_message("System", f"AI başlatma hatası: {str(e)}")
         
     def add_message(self, sender, message):
@@ -128,6 +98,15 @@ class AIChatInterface(ctk.CTkFrame):
         self.add_message("AI", "🤔 Düşünüyorum...")
         
         try:
+            # Ana pencereden model bilgisini al
+            backend = self.parent.backend_var.get()
+            model_name = self.parent.model_var.get()
+            full_model_name = f"{backend} - {model_name}"
+            
+            # Modeli ayarla
+            self.ai_integration.set_model(full_model_name)
+            
+            # Yanıtı oluştur
             response = self.ai_integration.generate_response(user_message)
             self.after(0, lambda: self.show_ai_response(response))
         except Exception as e:
@@ -141,21 +120,6 @@ class AIChatInterface(ctk.CTkFrame):
         self.chat_text.config(state="disabled")
         
         self.add_message("AI", response)
-        
-    def load_model(self):
-        """Model yükle"""
-        model_name = self.model_var.get()
-        if not self.ai_integration:
-            self.add_message("System", "AI sistemi hazır değil.")
-            return
-            
-        self.add_message("System", f"Model yükleniyor: {model_name}")
-        
-        success = self.ai_integration.set_model(model_name)
-        if success:
-            self.add_message("System", f"✅ Model başarıyla yüklendi: {model_name}")
-        else:
-            self.add_message("System", f"❌ Model yüklenemedi: {model_name}")
         
     def clear_chat(self):
         """Sohbeti temizle"""
