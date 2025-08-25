@@ -1,5 +1,0 @@
-"""
-Module docstring
-"""
-
-# Implementation here
